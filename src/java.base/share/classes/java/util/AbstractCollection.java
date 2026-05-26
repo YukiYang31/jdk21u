@@ -30,11 +30,11 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.PolyGrowShrink;
 import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.checkerframework.checker.modifiability.qual.Growable;
+import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Modifiable;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
 import org.checkerframework.checker.modifiability.qual.ThrowsUOE;
-import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Unmodifiable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
 import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
@@ -105,6 +105,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      */
     @SideEffectFree
     public abstract @MaybeModifiable @PolyGrowShrink @PolyNonEmpty Iterator<E> iterator(@MaybeModifiable @PolyGrowShrink @PolyNonEmpty AbstractCollection<E> this);
+
     @Pure
     public abstract @NonNegative int size(@MaybeModifiable @GuardSatisfied AbstractCollection<E> this);
 

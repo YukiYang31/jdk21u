@@ -30,7 +30,7 @@ import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.checkerframework.checker.modifiability.qual.Growable;
 import org.checkerframework.checker.modifiability.qual.Modifiable;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
-import org.checkerframework.checker.modifiability.qual.PolyShrink;
+import org.checkerframework.checker.modifiability.qual.PolyShrinkable;
 import org.checkerframework.checker.modifiability.qual.Replaceable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
@@ -512,7 +512,8 @@ public class Hashtable<K extends @NonNull Object,V extends @NonNull Object>
     @EnsuresKeyFor(value={"#1"}, map={"this"})
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @Nullable V put(@Growable @Replaceable @GuardSatisfied Hashtable<K, V> this, K key, V value) {        // Make sure the value is not null
+    public synchronized @Nullable V put(@Growable @Replaceable @GuardSatisfied Hashtable<K, V> this, K key, V value) {
+        // Make sure the value is not null
         if (value == null) {
             throw new NullPointerException();
         }
@@ -708,7 +709,7 @@ public class Hashtable<K extends @NonNull Object,V extends @NonNull Object>
      * @since 1.2
      */
     @SideEffectFree
-    public @PolyShrink Set<@KeyFor({"this"}) K> keySet(@PolyShrink @GuardSatisfied Hashtable<K, V> this) {
+    public @PolyShrinkable Set<@KeyFor({"this"}) K> keySet(@PolyShrinkable @GuardSatisfied Hashtable<K, V> this) {
         if (keySet == null)
             keySet = Collections.synchronizedSet(new KeySet(), this);
         return keySet;
@@ -757,7 +758,7 @@ public class Hashtable<K extends @NonNull Object,V extends @NonNull Object>
      * @since 1.2
      */
     @SideEffectFree
-    public @PolyShrink Set<Map.@PolyModifiable Entry<@KeyFor({"this"}) K,V>> entrySet(@PolyModifiable @GuardSatisfied Hashtable<K, V> this) {
+    public @PolyShrinkable Set<Map.@PolyModifiable Entry<@KeyFor({"this"}) K,V>> entrySet(@PolyModifiable @GuardSatisfied Hashtable<K, V> this) {
         if (entrySet==null)
             entrySet = Collections.synchronizedSet(new EntrySet(), this);
         return entrySet;
@@ -848,7 +849,7 @@ public class Hashtable<K extends @NonNull Object,V extends @NonNull Object>
      * @since 1.2
      */
     @SideEffectFree
-    public @PolyShrink Collection<V> values(@PolyShrink @GuardSatisfied Hashtable<K, V> this) {
+    public @PolyShrinkable Collection<V> values(@PolyShrinkable @GuardSatisfied Hashtable<K, V> this) {
         if (values==null)
             values = Collections.synchronizedCollection(new ValueCollection(),
                                                         this);
