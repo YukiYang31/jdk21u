@@ -462,6 +462,9 @@ public class ConcurrentSkipListSet<E extends @NonNull Object>
      * @since 21
      */
     @ThrowsUOE
+    @EnsuresNonEmpty("this")
+    // @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public void addFirst(E e) {
         throw new UnsupportedOperationException();
     }
@@ -475,6 +478,9 @@ public class ConcurrentSkipListSet<E extends @NonNull Object>
      * @since 21
      */
     @ThrowsUOE
+    @EnsuresNonEmpty("this")
+    // @SideEffectsOnly("this")
+    @DoesNotUnrefineReceiver("modifiability")
     public void addLast(E e) {
         throw new UnsupportedOperationException();
     }
