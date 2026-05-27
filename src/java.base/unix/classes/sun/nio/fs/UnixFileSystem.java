@@ -260,7 +260,7 @@ abstract class UnixFileSystem
         }
 
         @Override
-        @SideEffectsOnly("this")
+        // @SideEffectsOnly("this")
         public synchronized FileStore next() {
             if (next == null)
                 next = readNext();

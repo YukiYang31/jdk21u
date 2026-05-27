@@ -145,7 +145,7 @@ final class ProcessEnvironment extends HashMap<String,String>
                 Iterator<Map.Entry<String,String>> i = s.iterator();
                 @Pure
                 public boolean hasNext() { return i.hasNext();}
-                @SideEffectsOnly("this")
+                // @SideEffectsOnly("this")
                 public Map.Entry<String,String> next() {
                     return new CheckedEntry(i.next());
                 }

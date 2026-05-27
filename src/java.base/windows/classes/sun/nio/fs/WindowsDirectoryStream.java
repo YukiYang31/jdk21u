@@ -215,7 +215,7 @@ class WindowsDirectoryStream
         }
 
         @Override
-        @SideEffectsOnly("this")
+        // @SideEffectsOnly("this")
         public synchronized Path next() {
             Path result = null;
             if (nextEntry == null && !atEof) {
