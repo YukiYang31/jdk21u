@@ -339,7 +339,11 @@ public class SynchronousQueue<E extends @NonNull Object> extends AbstractQueue<E
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-        }
+    public E take(@GuardSatisfied @Shrinkable @CanShrink SynchronousQueue<E> this) throws InterruptedException {
+        E e = transferer.transfer(null, false, 0);
+        if (e != null)
+            return e;
+        Thread.interrupted();
         throw new InterruptedException();
     }
 
@@ -354,7 +358,10 @@ public class SynchronousQueue<E extends @NonNull Object> extends AbstractQueue<E
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-            return (E) e;
+    public E poll(@GuardSatisfied @Shrinkable @CanShrink SynchronousQueue<E> this, long timeout, TimeUnit unit) throws InterruptedException {
+        E e = transferer.transfer(null, true, unit.toNanos(timeout));
+        if (e != null || !Thread.interrupted())
+            return e;
         throw new InterruptedException();
     }
 
@@ -367,7 +374,8 @@ public class SynchronousQueue<E extends @NonNull Object> extends AbstractQueue<E
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-        return (E) xfer(null, 0L);
+    public E poll(@GuardSatisfied @Shrinkable @CanShrink SynchronousQueue<E> this) {
+        return transferer.transfer(null, true, 0);
     }
 
     /**
