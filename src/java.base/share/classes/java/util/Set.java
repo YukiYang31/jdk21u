@@ -29,9 +29,9 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.PolyGrowShrink;
 import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.checkerframework.checker.modifiability.qual.Growable;
+import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
-import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Unmodifiable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
@@ -487,6 +487,7 @@ public interface Set<E> extends Collection<E> {
      */
     @Override
     @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     default Spliterator<E> spliterator(@MaybeModifiable Set<E> this) {
         return Spliterators.spliterator(this, Spliterator.DISTINCT);
     }

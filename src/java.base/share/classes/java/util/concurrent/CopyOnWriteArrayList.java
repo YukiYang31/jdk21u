@@ -59,9 +59,6 @@ import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.qual.AnnotatedFor;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 // import org.checkerframework.dataflow.qual.SideEffectsOnly;
-import org.checkerframework.framework.qual.AnnotatedFor;
-import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
-import org.checkerframework.framework.qual.AnnotatedFor;
 
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;

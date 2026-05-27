@@ -27,6 +27,10 @@ package java.util;
 
 import org.checkerframework.checker.index.qual.CanShrink;
 import org.checkerframework.checker.lock.qual.GuardSatisfied;
+import org.checkerframework.checker.modifiability.qual.Growable;
+import org.checkerframework.checker.modifiability.qual.IteratorPolyMod;
+import org.checkerframework.checker.modifiability.qual.Modifiable;
+import org.checkerframework.checker.modifiability.qual.Shrinkable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
 import org.checkerframework.dataflow.qual.Pure;
@@ -58,12 +62,12 @@ import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
  * @since   1.0
  */
 @CFComment({"lock/nullness: permit null elements"})
-@AnnotatedFor({"lock", "nullness"})
+@AnnotatedFor({"lock", "nullness", "modifiability"})
 public class Stack<E> extends Vector<E> {
     /**
      * Creates an empty Stack.
      */
-    public Stack() {
+    public @Modifiable @IteratorPolyMod Stack() {
     }
 
     /**
@@ -78,7 +82,7 @@ public class Stack<E> extends Vector<E> {
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public E push(@GuardSatisfied Stack<E> this, E item) {
+    public E push(@Growable @GuardSatisfied Stack<E> this, E item) {
         addElement(item);
 
         return item;
@@ -94,7 +98,7 @@ public class Stack<E> extends Vector<E> {
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized E pop(@GuardSatisfied @NonEmpty @CanShrink Stack<E> this) {
+    public synchronized E pop(@Shrinkable @GuardSatisfied @NonEmpty @CanShrink Stack<E> this) {
         E       obj;
         int     len = size();
 

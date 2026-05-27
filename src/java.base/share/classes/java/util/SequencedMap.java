@@ -296,7 +296,7 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    default @PolyShrinkable SequencedSet<K> sequencedKeySet(@PolyShrinkable SequencedMap<K,V> this) {
+    default @PolyShrinkable @Ungrowable SequencedSet<K> sequencedKeySet(@PolyShrinkable SequencedMap<K,V> this) {
         class SeqKeySet extends AbstractMap.ViewCollection<K> implements SequencedSet<K> {
             Collection<K> view() {
                 return SequencedMap.this.keySet();
@@ -333,7 +333,7 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    default @PolyShrinkable SequencedCollection<V> sequencedValues(@PolyShrinkable SequencedMap<K,V> this) {
+    default @PolyShrinkable @Ungrowable SequencedCollection<V> sequencedValues(@PolyShrinkable SequencedMap<K,V> this) {
         class SeqValues extends AbstractMap.ViewCollection<V> implements SequencedCollection<V> {
             Collection<V> view() {
                 return SequencedMap.this.values();
@@ -361,7 +361,7 @@ public interface SequencedMap<K, V> extends Map<K, V> {
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    default @PolyShrinkable SequencedSet<Map.@PolyModifiable Entry<K, V>> sequencedEntrySet(@PolyModifiable SequencedMap<K,V> this) {
+    default @PolyShrinkable @Ungrowable SequencedSet<Map.@PolyModifiable Entry<K, V>> sequencedEntrySet(@PolyModifiable SequencedMap<K,V> this) {
         class SeqEntrySet extends AbstractMap.ViewCollection<Map.Entry<K, V>>
                 implements SequencedSet<Map.Entry<K, V>> {
             Collection<Map.Entry<K, V>> view() {

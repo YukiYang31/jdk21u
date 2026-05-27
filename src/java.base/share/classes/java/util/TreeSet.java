@@ -29,6 +29,7 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.PolyGrowShrink;
 import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.checkerframework.checker.modifiability.qual.Growable;
+import org.checkerframework.checker.modifiability.qual.IteratorPolyMod;
 import org.checkerframework.checker.modifiability.qual.Modifiable;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
@@ -130,7 +131,7 @@ public class TreeSet<E> extends AbstractSet<E>
     /**
      * Constructs a set backed by the specified navigable map.
      */
-    @Modifiable TreeSet(NavigableMap<E,Object> m) {
+    @Modifiable @IteratorPolyMod TreeSet(NavigableMap<E,Object> m) {
         this.m = m;
     }
 
@@ -147,7 +148,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * integers), the {@code add} call will throw a
      * {@code ClassCastException}.
      */
-    public @Modifiable TreeSet() {
+    public @Modifiable @IteratorPolyMod TreeSet() {
         this(new TreeMap<>());
     }
 
@@ -164,7 +165,7 @@ public class TreeSet<E> extends AbstractSet<E>
      *        If {@code null}, the {@linkplain Comparable natural
      *        ordering} of the elements will be used.
      */
-    public @Modifiable TreeSet(@Nullable Comparator<? super E> comparator) {
+    public @Modifiable @IteratorPolyMod TreeSet(@Nullable Comparator<? super E> comparator) {
         this(new TreeMap<>(comparator));
     }
 
@@ -182,7 +183,7 @@ public class TreeSet<E> extends AbstractSet<E>
      *         not {@link Comparable}, or are not mutually comparable
      * @throws NullPointerException if the specified collection is null
      */
-    public @Modifiable @PolyNonEmpty TreeSet(@PolyNonEmpty Collection<? extends E> c) {
+    public @Modifiable @IteratorPolyMod @PolyNonEmpty TreeSet(@PolyNonEmpty Collection<? extends E> c) {
         this();
         addAll(c);
     }
@@ -194,7 +195,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * @param s sorted set whose elements will comprise the new set
      * @throws NullPointerException if the specified sorted set is null
      */
-    public @Modifiable @PolyNonEmpty TreeSet(@PolyNonEmpty SortedSet<E> s) {
+    public @Modifiable @IteratorPolyMod @PolyNonEmpty TreeSet(@PolyNonEmpty SortedSet<E> s) {
         this(s.comparator());
         addAll(s);
     }
@@ -216,6 +217,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * @since 1.6
      */
     @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     public @PolyGrowShrink @PolyModifiable @PolyNonEmpty Iterator<E> descendingIterator(@PolyGrowShrink @PolyModifiable @PolyNonEmpty TreeSet<E> this) {
         return m.descendingKeySet().iterator();
     }
@@ -563,7 +565,7 @@ public class TreeSet<E> extends AbstractSet<E>
      */
     @SideEffectFree
     @SuppressWarnings("unchecked")
-    public @Modifiable Object clone(@GuardSatisfied TreeSet<E> this) {
+    public @Modifiable @IteratorPolyMod Object clone(@GuardSatisfied TreeSet<E> this) {
         TreeSet<E> clone;
         try {
             clone = (TreeSet<E>) super.clone();
@@ -648,6 +650,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * @since 1.8
      */
     @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     public Spliterator<E> spliterator() {
         return TreeMap.keySpliteratorFor(m);
     }

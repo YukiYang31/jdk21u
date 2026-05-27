@@ -161,7 +161,7 @@ import jdk.internal.util.xml.PropertiesDefaultHandler;
  * @author  Xueming Shen
  * @since   1.0
  */
-@AnnotatedFor({"index", "lock", "nullness", "propkey"})
+@AnnotatedFor({"index", "lock", "nullness", "propkey", "modifiability"})
 public class Properties extends Hashtable<Object,Object> {
     /**
      * use serialVersionUID from JDK 1.1.X for interoperability
@@ -1379,28 +1379,28 @@ public class Properties extends Hashtable<Object,Object> {
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized Object put(Object key, Object value) {
+    public synchronized Object put(@Growable @Replaceable Properties this, Object key, Object value) {
         return map.put(key, value);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized Object remove(@GuardSatisfied @Nullable @UnknownSignedness Object key) {
+    public synchronized Object remove(@Shrinkable Properties this, @GuardSatisfied @Nullable @UnknownSignedness Object key) {
         return map.remove(key);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized void putAll(Map<?, ?> t) {
+    public synchronized void putAll(@Growable @Replaceable Properties this, Map<?, ?> t) {
         map.putAll(t);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized void clear() {
+    public synchronized void clear(@Shrinkable Properties this) {
         map.clear();
     }
 
@@ -1412,19 +1412,19 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Override
     @SideEffectFree
-    public Set<@KeyFor("this") Object> keySet() {
+    public @IteratorPolyMod @PolyShrinkable @Ungrowable Set<@KeyFor("this") Object> keySet(@PolyShrinkable Properties this) {
         return Collections.synchronizedSet(map.keySet(), this);
     }
 
     @Override
     @SideEffectFree
-    public Collection<Object> values() {
+    public @IteratorPolyMod @PolyShrinkable @Ungrowable Collection<Object> values(@PolyShrinkable Properties this) {
         return Collections.synchronizedCollection(map.values(), this);
     }
 
     @Override
     @SideEffectFree
-    public Set<Map.Entry<@KeyFor("this") Object, Object>> entrySet() {
+    public @IteratorPolyMod @PolyShrinkable @Ungrowable Set<Map.@PolyModifiable Entry<@KeyFor("this") Object, Object>> entrySet(@PolyModifiable Properties this) {
         return Collections.synchronizedSet(new EntrySet(map.entrySet()), this);
     }
 
@@ -1539,62 +1539,62 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized void replaceAll(BiFunction<? super Object, ? super Object, ?> function) {
+    public synchronized void replaceAll(@Replaceable Properties this, BiFunction<? super Object, ? super Object, ?> function) {
         map.replaceAll(function);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized Object putIfAbsent(Object key, Object value) {
+    public synchronized Object putIfAbsent(@Growable Properties this, Object key, Object value) {
         return map.putIfAbsent(key, value);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized boolean remove(@GuardSatisfied @Nullable @UnknownSignedness Object key, @GuardSatisfied @Nullable @UnknownSignedness Object value) {
+    public synchronized boolean remove(@Shrinkable Properties this, @GuardSatisfied @Nullable @UnknownSignedness Object key, @GuardSatisfied @Nullable @UnknownSignedness Object value) {
         return map.remove(key, value);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized boolean replace(Object key, Object oldValue, Object newValue) {
+    public synchronized boolean replace(@Replaceable Properties this, Object key, Object oldValue, Object newValue) {
         return map.replace(key, oldValue, newValue);
     }
 
     @Override
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized Object replace(Object key, Object value) {
+    public synchronized Object replace(@Replaceable Properties this, Object key, Object value) {
         return map.replace(key, value);
     }
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @PolyNull Object computeIfAbsent(Object key,
+    public synchronized @PolyNull Object computeIfAbsent(@Growable Properties this, Object key,
             Function<? super Object, ? extends @PolyNull Object> mappingFunction) {
         return map.computeIfAbsent(key, mappingFunction);
     }
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @PolyNull Object computeIfPresent(Object key,
+    public synchronized @PolyNull Object computeIfPresent(@Shrinkable @Replaceable Properties this, Object key,
             BiFunction<? super Object, ? super Object, ? extends @PolyNull Object> remappingFunction) {
         return map.computeIfPresent(key, remappingFunction);
     }
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @PolyNull Object compute(Object key,
+    public synchronized @PolyNull Object compute(@Modifiable Properties this, Object key,
             BiFunction<? super Object, ? super Object, ? extends @PolyNull Object> remappingFunction) {
         return map.compute(key, remappingFunction);
     }
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @Nullable Object merge(Object key, Object value,
+    public synchronized @Nullable Object merge(@Modifiable Properties this, Object key, Object value,
             BiFunction<? super Object, ? super Object, ?> remappingFunction) {
         return map.merge(key, value, remappingFunction);
     }
@@ -1607,7 +1607,7 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Override
     @SideEffectFree
-    public synchronized Object clone() {
+    public synchronized @Modifiable Object clone() {
         Properties clone = (Properties) cloneHashtable();
         clone.map = new ConcurrentHashMap<>(map);
         return clone;

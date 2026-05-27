@@ -26,9 +26,10 @@
 package java.util;
 
 import org.checkerframework.checker.modifiability.qual.Growable;
+import org.checkerframework.checker.modifiability.qual.IteratorPolyMod;
+import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Modifiable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
-import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Unmodifiable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
 import org.checkerframework.dataflow.qual.Deterministic;
@@ -154,7 +155,7 @@ public class LinkedHashSet<E>
      * @throws     IllegalArgumentException  if the initial capacity is less
      *               than zero, or if the load factor is nonpositive
      */
-    public @Modifiable LinkedHashSet(int initialCapacity, float loadFactor) {
+    public @Modifiable @IteratorPolyMod LinkedHashSet(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor, true);
     }
 
@@ -170,7 +171,7 @@ public class LinkedHashSet<E>
      * @throws  IllegalArgumentException if the initial capacity is less
      *              than zero
      */
-    public @Modifiable LinkedHashSet(int initialCapacity) {
+    public @Modifiable @IteratorPolyMod LinkedHashSet(int initialCapacity) {
         super(initialCapacity, .75f, true);
     }
 
@@ -178,7 +179,7 @@ public class LinkedHashSet<E>
      * Constructs a new, empty linked hash set with the default initial
      * capacity (16) and load factor (0.75).
      */
-    public @Modifiable LinkedHashSet() {
+    public @Modifiable @IteratorPolyMod LinkedHashSet() {
         super(16, .75f, true);
     }
 
@@ -192,7 +193,7 @@ public class LinkedHashSet<E>
      *           this set
      * @throws NullPointerException if the specified collection is null
      */
-    public @Modifiable LinkedHashSet(Collection<? extends E> c) {
+    public @Modifiable @IteratorPolyMod LinkedHashSet(Collection<? extends E> c) {
         super(HashMap.calculateHashMapCapacity(Math.max(c.size(), 12)), .75f, true);
         addAll(c);
     }
@@ -218,6 +219,7 @@ public class LinkedHashSet<E>
      */
     @Override
     @SideEffectFree
+    @DoesNotUnrefineReceiver("modifiability")
     public Spliterator<E> spliterator() {
         return Spliterators.spliterator(this, Spliterator.DISTINCT | Spliterator.ORDERED);
     }
