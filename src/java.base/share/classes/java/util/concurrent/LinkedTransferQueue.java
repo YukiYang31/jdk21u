@@ -1243,8 +1243,6 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public boolean tryTransfer(@GuardSatisfied @Growable @CanShrink LinkedTransferQueue<E> this, E e) {
-        Objects.requireNonNull(e);
         return xfer(e, 0L) == null;
     }
 
@@ -1261,10 +1259,6 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
      */
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public void transfer(@GuardSatisfied @Growable @CanShrink LinkedTransferQueue<E> this, E e) throws InterruptedException {
-        Objects.requireNonNull(e);
-        if (!Thread.interrupted()) {
-            if (xfer(e, Long.MAX_VALUE) == null)
                 return;
             Thread.interrupted(); // failure possible only due to interrupt
         }
@@ -1301,7 +1295,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
     @SuppressWarnings("unchecked")
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public E take(@Shrinkable @GuardSatisfied @CanShrink LinkedTransferQueue<E> this) throws InterruptedException {
+    public E take(@GuardSatisfied @Shrinkable @CanShrink LinkedTransferQueue<E> this) throws InterruptedException {
         Object e;
         if (!Thread.interrupted()) {
             if ((e = xfer(null, Long.MAX_VALUE)) != null)
@@ -1314,7 +1308,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
     @SuppressWarnings("unchecked")
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public E poll(@Shrinkable @GuardSatisfied @CanShrink LinkedTransferQueue<E> this, long timeout, TimeUnit unit) throws InterruptedException {
+    public E poll(@GuardSatisfied @Shrinkable @CanShrink LinkedTransferQueue<E> this, long timeout, TimeUnit unit) throws InterruptedException {
         Object e;
         long nanos = Math.max(unit.toNanos(timeout), 0L);
         if ((e = xfer(null, nanos)) != null || !Thread.interrupted())
