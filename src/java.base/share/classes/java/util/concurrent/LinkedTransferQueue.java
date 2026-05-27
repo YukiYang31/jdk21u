@@ -1244,6 +1244,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public boolean tryTransfer(@GuardSatisfied @Growable @CanShrink LinkedTransferQueue<E> this, E e) {
+        Objects.requireNonNull(e);
         return xfer(e, 0L) == null;
     }
 
@@ -1261,10 +1262,13 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E>
     // @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public void transfer(@GuardSatisfied @Growable @CanShrink LinkedTransferQueue<E> this, E e) throws InterruptedException {
-        if (xfer(e, true, SYNC, 0L) != null) {
+        Objects.requireNonNull(e);
+        if (!Thread.interrupted()) {
+            if (xfer(e, Long.MAX_VALUE) == null)
+                return;
             Thread.interrupted(); // failure possible only due to interrupt
-            throw new InterruptedException();
         }
+        throw new InterruptedException();
     }
 
     /**
