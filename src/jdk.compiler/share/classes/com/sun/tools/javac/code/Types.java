@@ -27,6 +27,7 @@ package com.sun.tools.javac.code;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 
 import java.lang.ref.SoftReference;
 import java.util.HashSet;
@@ -642,6 +643,7 @@ public class Types {
 
         transient JCDiagnostic diagnostic;
 
+        @SideEffectFree
         FunctionDescriptorLookupError() {
             this.diagnostic = null;
         }
@@ -3166,6 +3168,7 @@ public class Types {
             }
 
             @Override
+            @Pure
             public boolean equals(@Nullable Object obj) {
                 return (obj instanceof Entry entry)
                         && entry.msym == msym
@@ -3852,6 +3855,7 @@ public class Types {
                 return 127 * Types.this.hashCode(t1) + Types.this.hashCode(t2);
             }
             @Override
+            @Pure
             public boolean equals(@Nullable Object obj) {
                 return (obj instanceof TypePair typePair)
                         && isSameType(t1, typePair.t1)
@@ -4877,6 +4881,7 @@ public class Types {
             return types.hashCode(type);
         }
 
+        @Pure
         public boolean equals(@Nullable Object obj) {
             return (obj instanceof UniqueType uniqueType) &&
                     types.isSameType(type, uniqueType.type);
@@ -5054,6 +5059,7 @@ public class Types {
 
             private final transient Type type;
 
+            @SideEffectFree
             InvalidSignatureException(Type type) {
                 this.type = type;
             }
