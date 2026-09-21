@@ -28,6 +28,7 @@ package java.security;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.checkerframework.checker.signedness.qual.UnknownSignedness;
+import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
 import javax.security.auth.login.Configuration;
@@ -1103,7 +1104,8 @@ public abstract class Provider extends Properties {
         public int hashCode() {
             return type.hashCode() * 31 + algorithm.hashCode();
         }
-        public boolean equals(Object obj) {
+        @Pure
+        public boolean equals(@Nullable Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -1552,7 +1554,8 @@ public abstract class Provider extends Properties {
             return lowerString.hashCode();
         }
 
-        public boolean equals(Object obj) {
+        @Pure
+        public boolean equals(@Nullable Object obj) {
             if (this == obj) {
                 return true;
             }

@@ -27,13 +27,15 @@ package java.util;
 
 import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
+import org.checkerframework.checker.modifiability.qual.SeqGrowable;
+import org.checkerframework.checker.modifiability.qual.SeqUngrowable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
-import org.checkerframework.checker.modifiability.qual.ThrowsUOE;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.AnnotatedFor;
 import org.checkerframework.framework.qual.CFComment;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
@@ -120,7 +122,7 @@ import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
 @CFComment({"lock/nullness: Subclasses of this interface/class may opt to prohibit null elements"})
 @AnnotatedFor({"lock", "nullness"})
-public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
+public @SeqUngrowable interface SortedSet<E> extends Set<E>, SequencedSet<E> {
     /**
      * Returns the comparator used to order the elements in this set,
      * or {@code null} if this set uses the {@linkplain Comparable
@@ -279,7 +281,7 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
         return new Spliterators.IteratorSpliterator<E>(
                 this, Spliterator.DISTINCT | Spliterator.SORTED | Spliterator.ORDERED) {
             @Override
-            public Comparator<? super E> getComparator() {
+            public @Nullable Comparator<? super E> getComparator() {
                 return SortedSet.this.comparator();
             }
         };
@@ -299,10 +301,9 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @since 21
      */
     @EnsuresNonEmpty("this")
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    @ThrowsUOE
-    default void addFirst(E e) {
+    default void addFirst(@SeqGrowable SortedSet<E> this, E e) {
         throw new UnsupportedOperationException();
     }
 
@@ -318,10 +319,9 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @since 21
      */
     @EnsuresNonEmpty("this")
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    @ThrowsUOE
-    default void addLast(E e) {
+    default void addLast(@SeqGrowable SortedSet<E> this, E e) {
         throw new UnsupportedOperationException();
     }
 
@@ -367,7 +367,7 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     default E removeFirst(@Shrinkable SortedSet<E> this) {
         E e = this.first();
@@ -387,7 +387,7 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     default E removeLast(@Shrinkable SortedSet<E> this) {
         E e = this.last();
@@ -411,7 +411,7 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @return a reverse-ordered view of this collection, as a {@code SortedSet}
      * @since 21
      */
-    // @SideEffectsOnly("this")
+    @SideEffectFree
     @DoesNotUnrefineReceiver("modifiability")
     default @PolyModifiable SortedSet<E> reversed(@PolyModifiable SortedSet<E> this) {
         return ReverseOrderSortedSetView.of(this);

@@ -27,7 +27,7 @@ package java.lang;
 
 import org.checkerframework.common.value.qual.StaticallyExecutable;
 import org.checkerframework.dataflow.qual.Pure;
-// import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -435,7 +435,7 @@ final class StringUTF16 {
     }
 
     @IntrinsicCandidate
-    // @SideEffectsOnly("#3")
+    @SideEffectsOnly("#3")
     public static void getChars(byte[] value, int srcBegin, int srcEnd, char[] dst, int dstBegin) {
         // We need a range check here because 'getChar' has no checks
         if (srcBegin < srcEnd) {
@@ -1579,6 +1579,7 @@ final class StringUTF16 {
         return pos;
     }
 
+    @Pure
     public static boolean contentEquals(byte[] v1, byte[] v2, int len) {
         checkBoundsOffCount(0, len, v2);
         for (int i = 0; i < len; i++) {
@@ -1589,6 +1590,7 @@ final class StringUTF16 {
         return true;
     }
 
+    @Pure
     public static boolean contentEquals(byte[] value, CharSequence cs, int len) {
         checkOffset(len, value);
         for (int i = 0; i < len; i++) {

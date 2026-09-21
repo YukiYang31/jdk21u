@@ -38,6 +38,7 @@ package java.util.concurrent;
 import org.checkerframework.checker.modifiability.qual.Growable;
 import org.checkerframework.checker.modifiability.qual.MaybeModifiable;
 import org.checkerframework.checker.modifiability.qual.Modifiable;
+import org.checkerframework.checker.modifiability.qual.PolyModifiable;
 import org.checkerframework.checker.modifiability.qual.Replaceable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
 import org.checkerframework.checker.nullness.qual.EnsuresKeyFor;
@@ -46,6 +47,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.checkerframework.checker.signedness.qual.UnknownSignedness;
 import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.AnnotatedFor;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
@@ -99,7 +101,9 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      */
     @Override
     @Pure
-    default V getOrDefault(@MaybeModifiable ConcurrentMap<K,V> this,Object key, V defaultValue) {
+    default @PolyModifiable V getOrDefault(ConcurrentMap<K, @PolyModifiable V> this,
+                                           Object key,
+                                           @PolyModifiable V defaultValue) {
         V v;
         return ((v = get(key)) != null) ? v : defaultValue;
     }
@@ -172,7 +176,7 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      *         or value prevents it from being stored in this map
      */
     @EnsuresKeyFor(value={"#1"}, map={"this"})
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     @Nullable V putIfAbsent(@Growable ConcurrentMap<K,V> this, K key, V value);
     /**
@@ -204,7 +208,7 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      *         and this map does not permit null keys or values
      * (<a href="{@docRoot}/java.base/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     boolean remove(@Shrinkable ConcurrentMap<K,V> this, @UnknownSignedness Object key, @UnknownSignedness Object value);
     /**
@@ -237,7 +241,7 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      * @throws IllegalArgumentException if some property of a specified key
      *         or value prevents it from being stored in this map
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     boolean replace(@Replaceable ConcurrentMap<K,V> this, K key, V oldValue, V newValue);
     /**
@@ -270,7 +274,7 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     @Nullable V replace(@Replaceable ConcurrentMap<K,V> this, K key, V value);
     /**
@@ -389,8 +393,8 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
      */
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    default @PolyNull V computeIfPresent(@Shrinkable @Replaceable ConcurrentMap<K,V> this, K key,
-            BiFunction<? super K, ? super V, ? extends @PolyNull V> remappingFunction) {
+    default @Nullable V computeIfPresent(@Shrinkable @Replaceable ConcurrentMap<K,V> this, K key,
+            BiFunction<? super K, ? super V, ? extends @Nullable V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         for (V oldValue; (oldValue = get(key)) != null; ) {
             V newValue = remappingFunction.apply(key, oldValue);
@@ -439,7 +443,7 @@ public interface ConcurrentMap<K extends @NonNull Object,V extends @NonNull Obje
     @Override
     @DoesNotUnrefineReceiver("modifiability")
     default @PolyNull V compute(@Modifiable ConcurrentMap<K,V> this, K key,
-                      BiFunction<? super K, ? super V, ? extends @PolyNull V> remappingFunction) {
+                      BiFunction<? super K, ? super @Nullable V, ? extends @PolyNull V> remappingFunction) {
         retry: for (;;) {
             V oldValue = get(key);
             // if putIfAbsent fails, opportunistically use its return value

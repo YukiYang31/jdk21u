@@ -26,6 +26,7 @@
 package java.lang.reflect;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
@@ -59,6 +60,7 @@ public class InvocationTargetException extends ReflectiveOperationException {
      * Constructs an {@code InvocationTargetException} with
      * {@code null} as the target exception.
      */
+    @SideEffectFree
     protected InvocationTargetException() {
         super((Throwable)null);  // Disallow initCause
         this.target = null;
@@ -109,6 +111,7 @@ public class InvocationTargetException extends ReflectiveOperationException {
      * @return  the cause of this exception.
      * @since   1.4
      */
+    @Pure
     @Override
     public @Nullable Throwable getCause() {
         return target;

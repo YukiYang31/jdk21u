@@ -35,8 +35,8 @@ import org.checkerframework.checker.signedness.qual.UnknownSignedness;
 import org.checkerframework.common.value.qual.StaticallyExecutable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
-// import org.checkerframework.dataflow.qual.SideEffectsOnly;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
@@ -315,7 +315,7 @@ class ImmutableCollections {
 
         @Override
         @Pure
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (o == this) {
                 return true;
             }
@@ -351,6 +351,7 @@ class ImmutableCollections {
         }
 
         @Override
+        @SideEffectFree
         public List<E> reversed() {
             return ReverseOrderListView.of(this, false);
         }
@@ -393,7 +394,7 @@ class ImmutableCollections {
             return cursor != size;
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public E next(@NonEmpty ListItr<E> this) {
             try {
@@ -805,7 +806,7 @@ class ImmutableCollections {
 
         @Override
         @Pure
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             if (o == this) {
                 return true;
             } else if (!(o instanceof Set)) {
@@ -894,7 +895,7 @@ class ImmutableCollections {
                 }
 
                 @Override
-                // @SideEffectsOnly("this")
+                @SideEffectsOnly("this")
                 @DoesNotUnrefineReceiver("modifiability")
                 @SuppressWarnings("unchecked")
                 public E next(/*@NonEmpty Iterator<E> this*/) {
@@ -1035,7 +1036,7 @@ class ImmutableCollections {
             }
 
             @Override
-            // @SideEffectsOnly("this")
+            @SideEffectsOnly("this")
             @DoesNotUnrefineReceiver("modifiability")
             public E next(@NonEmpty SetNIterator this) {
                 if (remaining > 0) {
@@ -1147,9 +1148,9 @@ class ImmutableCollections {
     // Not a jdk.internal.ValueBased class; disqualified by fields in superclass AbstractMap
     abstract static class AbstractImmutableMap<K,V> extends AbstractMap<K,V> implements Serializable {
         @Override public void clear() { throw uoe(); }
-        @Override public @PolyNull V compute(K key, BiFunction<? super K,? super V,? extends @PolyNull V> rf) { throw uoe(); }
+        @Override public @PolyNull V compute(K key, BiFunction<? super K,? super @Nullable V,? extends @PolyNull V> rf) { throw uoe(); }
         @Override public @PolyNull V computeIfAbsent(K key, Function<? super K,? extends @PolyNull V> mf) { throw uoe(); }
-        @Override public @PolyNull V computeIfPresent(K key, BiFunction<? super K,? super V,? extends @PolyNull V> rf) { throw uoe(); }
+        @Override public @Nullable V computeIfPresent(K key, BiFunction<? super K,? super V,? extends @Nullable V> rf) { throw uoe(); }
         @Override public @PolyNull V merge(K key, @NonNull V value, BiFunction<? super V,? super V,? extends @PolyNull V> rf) { throw uoe(); }
         @Override public V put(K key, V value) { throw uoe(); }
         @Override public void putAll(Map<? extends K,? extends V> m) { throw uoe(); }
@@ -1196,7 +1197,7 @@ class ImmutableCollections {
 
         @Override
         @Pure
-        public V get(Object o) {
+        public @Nullable V get(Object o) {
             return o.equals(k0) ? v0 : null; // implicit nullcheck of o
         }
 
@@ -1322,7 +1323,7 @@ class ImmutableCollections {
         @Override
         @SuppressWarnings("unchecked")
         @Pure
-        public V get(Object o) {
+        public @Nullable V get(Object o) {
             if (size == 0) {
                 Objects.requireNonNull(o);
                 return null;
@@ -1368,7 +1369,7 @@ class ImmutableCollections {
                 return remaining > 0;
             }
 
-            // @SideEffectsOnly("this")
+            @SideEffectsOnly("this")
             @DoesNotUnrefineReceiver("modifiability")
             private int nextIndex() {
                 int idx = this.idx;

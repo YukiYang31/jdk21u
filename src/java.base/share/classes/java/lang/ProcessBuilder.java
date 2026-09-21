@@ -26,9 +26,11 @@
 package java.lang;
 
 import org.checkerframework.checker.modifiability.qual.Modifiable;
+import org.checkerframework.checker.modifiability.qual.IteratorPolyMod;
 import org.checkerframework.checker.mustcall.qual.MustCall;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.tainting.qual.Untainted;
+import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
 import jdk.internal.util.OperatingSystem;
@@ -200,7 +202,7 @@ public final class ProcessBuilder
     // Lazily and racy initialize when needed, racy is ok, any logger is ok
     private static System.Logger LOGGER;
 
-    @Modifiable private List<String> command;
+    @Modifiable @IteratorPolyMod private List<String> command;
     private File directory;
     private Map<String,String> environment;
     private boolean redirectErrorStream;
@@ -284,7 +286,7 @@ public final class ProcessBuilder
      *
      * @return this process builder's program and its arguments
      */
-    public @Modifiable List<@Untainted String> command() {
+    public @Modifiable @IteratorPolyMod List<@Untainted String> command() {
         return command;
     }
 
@@ -681,7 +683,8 @@ public final class ProcessBuilder
          * instances of the same type associated with non-null equal
          * {@code File} instances.
          */
-        public boolean equals(Object obj) {
+        @Pure
+        public boolean equals(@Nullable Object obj) {
             if (obj == this)
                 return true;
             if (! (obj instanceof Redirect r))

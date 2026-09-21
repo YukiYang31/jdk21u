@@ -26,6 +26,8 @@
 package java.io;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
 /**
@@ -61,6 +63,8 @@ public class WriteAbortedException extends ObjectStreamException {
      * @param s   String describing the exception.
      * @param ex  Exception causing the abort.
      */
+    @SideEffectFree
+    @SuppressWarnings("purity.not.sideeffectfree.call") // initCause affects only the new object
     public WriteAbortedException(@Nullable String s, @Nullable Exception ex) {
         super(s);
         initCause(null);  // Disallow subsequent initCause
@@ -71,6 +75,7 @@ public class WriteAbortedException extends ObjectStreamException {
      * Produce the message and include the message from the nested
      * exception, if there is one.
      */
+    @SideEffectFree
     public String getMessage() {
         if (detail == null)
             return super.getMessage();
@@ -85,6 +90,7 @@ public class WriteAbortedException extends ObjectStreamException {
      *          which may be null.
      * @since   1.4
      */
+    @Pure
     @Override
     public @Nullable Throwable getCause() {
         return detail;

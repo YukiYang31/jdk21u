@@ -25,6 +25,10 @@
 
 package javax.lang.model.type;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
+import org.checkerframework.dataflow.qual.Pure;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.*;
@@ -121,7 +125,8 @@ public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
      * @param obj  the object to be compared with this type
      * @return {@code true} if the specified object is equal to this one
      */
-    boolean equals(Object obj);
+    @Pure
+    boolean equals(@Nullable Object obj);
 
     /**
      * Obeys the general contract of {@link Object#hashCode Object.hashCode}.
@@ -138,7 +143,7 @@ public interface TypeMirror extends javax.lang.model.AnnotatedConstruct {
      *
      * @return a string representation of this type
      */
-    String toString();
+    @FullyQualifiedName String toString();
 
     /**
      * {@inheritDoc}

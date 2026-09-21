@@ -25,8 +25,9 @@
 
 package sun.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
-// import org.checkerframework.dataflow.qual.SideEffectsOnly;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -211,7 +212,7 @@ public abstract class PreHashedMap<V>
                         return findNext();
                     }
 
-                    // @SideEffectsOnly("this")
+                    @SideEffectsOnly("this")
                     public String next() {
                         if (cur == null) {
                             if (!findNext())
@@ -247,7 +248,7 @@ public abstract class PreHashedMap<V>
                         return i.hasNext();
                     }
 
-                    // @SideEffectsOnly("this")
+                    @SideEffectsOnly("this")
                     public Map.Entry<String,V> next() {
                         return new Map.Entry<String,V>() {
                             String k = i.next();
@@ -260,7 +261,8 @@ public abstract class PreHashedMap<V>
                                            ? 0
                                            : v.hashCode()));
                             }
-                            public boolean equals(Object ob) {
+                            @Pure
+                            public boolean equals(@Nullable Object ob) {
                                 if (ob == this)
                                     return true;
                                 if (!(ob instanceof Map.Entry))

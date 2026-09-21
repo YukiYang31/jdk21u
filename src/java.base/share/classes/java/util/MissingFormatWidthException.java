@@ -25,6 +25,9 @@
 
 package java.util;
 
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 /**
  * Unchecked exception thrown when the format width is required.
  *
@@ -48,6 +51,7 @@ public non-sealed class MissingFormatWidthException extends IllegalFormatExcepti
      * @param  s
      *         The format specifier which does not have a width
      */
+    @SideEffectFree
     public MissingFormatWidthException(String s) {
         if (s == null)
             throw new NullPointerException();
@@ -63,6 +67,7 @@ public non-sealed class MissingFormatWidthException extends IllegalFormatExcepti
         return s;
     }
 
+    @Pure
     public String getMessage() {
         return s;
     }

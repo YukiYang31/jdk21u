@@ -26,9 +26,9 @@
 package java.lang;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.qual.AnnotatedFor;
-import org.checkerframework.common.aliasing.qual.Unique;
 
 /**
  * The class {@code Exception} and its subclasses are a form of
@@ -127,6 +127,7 @@ public class Exception extends Throwable {
      *                           be writable
      * @since 1.7
      */
+    @SideEffectFree
     protected @Unique Exception(@Nullable String message, @Nullable Throwable cause,
                         boolean enableSuppression,
                         boolean writableStackTrace) {

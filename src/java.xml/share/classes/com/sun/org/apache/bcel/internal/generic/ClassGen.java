@@ -20,6 +20,7 @@
 package com.sun.org.apache.bcel.internal.generic;
 
 import org.checkerframework.dataflow.qual.Pure;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -290,6 +291,7 @@ public class ClassGen extends AccessFlags implements Cloneable {
      * @see Object#equals(Object)
      */
     @Override
+    @Pure
     public boolean equals(final Object obj) {
         return obj instanceof ClassGen && bcelComparator.equals(this, (ClassGen) obj);
     }

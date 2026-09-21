@@ -32,6 +32,8 @@
 
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.qual.AnnotatedFor;
 
 /**
@@ -53,6 +55,7 @@ public class IllformedLocaleException extends RuntimeException {
      * Constructs a new {@code IllformedLocaleException} with no
      * detail message and -1 as the error index.
      */
+    @SideEffectFree
     public IllformedLocaleException() {
         super();
     }
@@ -63,7 +66,8 @@ public class IllformedLocaleException extends RuntimeException {
      *
      * @param message the message
      */
-    public IllformedLocaleException(String message) {
+    @SideEffectFree
+    public IllformedLocaleException(@Nullable String message) {
         super(message);
     }
 
@@ -77,6 +81,7 @@ public class IllformedLocaleException extends RuntimeException {
      * @param message the message
      * @param errorIndex the index
      */
+    @SideEffectFree
     public IllformedLocaleException(String message, int errorIndex) {
         super(message + ((errorIndex < 0) ? "" : " [at index " + errorIndex + "]"));
         _errIdx = errorIndex;

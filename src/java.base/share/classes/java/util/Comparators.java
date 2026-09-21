@@ -24,6 +24,10 @@
  */
 package java.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
 import java.io.Serializable;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -48,11 +52,13 @@ class Comparators {
         INSTANCE;
 
         @Override
+        @Pure
         public int compare(Comparable<Object> c1, Comparable<Object> c2) {
             return c1.compareTo(c2);
         }
 
         @Override
+        @SideEffectFree
         public Comparator<Comparable<Object>> reversed() {
             return Comparator.reverseOrder();
         }
@@ -67,15 +73,16 @@ class Comparators {
         private final boolean nullFirst;
         // if null, non-null Ts are considered equal
         @SuppressWarnings("serial") // Not statically typed as Serializable
-        private final Comparator<T> real;
+        private final @Nullable Comparator<T> real;
 
         @SuppressWarnings("unchecked")
-        NullComparator(boolean nullFirst, Comparator<? super T> real) {
+        NullComparator(boolean nullFirst, @Nullable Comparator<? super T> real) {
             this.nullFirst = nullFirst;
             this.real = (Comparator<T>) real;
         }
 
         @Override
+        @Pure
         public int compare(T a, T b) {
             if (a == null) {
                 return (b == null) ? 0 : (nullFirst ? -1 : 1);
@@ -93,6 +100,7 @@ class Comparators {
         }
 
         @Override
+        @SideEffectFree
         public Comparator<T> reversed() {
             return new NullComparator<>(!nullFirst, real == null ? null : real.reversed());
         }

@@ -8,11 +8,18 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.SubtypeOf;
 
 /**
- * If a collection's type is {@code @IteratorPolyMod}, then its {@code iterator()} method preserves
- * the ability to call {@code Iterator.remove()}. That is, if collection {@code c} has type
- * {@code @Shrinkable}, then {@code c.iterator()} also has type {@code @Shrinkable}. For any
- * collection whose type is {@code @MaybeIteratorPolyMod}, its iterator is always
- * {@code @Unshrinkable}.
+ * If a collection's type is {@code @IteratorPolyMod}, then its {@code iterator()} and {@code
+ * listIterator()} methods preserve the ability to call modification methods in its iterator.
+ *
+ * <p>For example, if collection {@code c} has type {@code @Shrinkable}, then {@code c.iterator()}
+ * also has type {@code @Shrinkable}. If list {@code l} has type {@code @Replaceable}, then {@code
+ * l.listIterator()} also has type {@code @Replaceable}.
+ *
+ * <p>If the collection itself is {@code @Unmodifiable}, then its iterator is {@code @Unshrinkable}.
+ * For any collection whose type is {@code @MaybeIteratorPolyMod}, its iterator is
+ * {@code @MaybeShrinkable}.
+ *
+ * <p>This annotation is used in GrowChecker, ShrinkChecker, and ReplaceChecker.
  *
  * @checker_framework.manual #modifiability-checker Modifiability Checker
  */

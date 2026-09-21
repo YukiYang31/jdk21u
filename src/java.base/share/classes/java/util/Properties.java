@@ -42,6 +42,7 @@ import org.checkerframework.checker.propkey.qual.PropertyKey;
 import org.checkerframework.checker.signedness.qual.UnknownSignedness;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.AnnotatedFor;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
@@ -247,7 +248,7 @@ public class Properties extends Hashtable<Object,Object> {
      * @see #getProperty
      * @since    1.2
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized @Nullable Object setProperty(@GuardSatisfied Properties this, @PropertyKey String key, String value) {
         return put(key, value);
@@ -1147,7 +1148,7 @@ public class Properties extends Hashtable<Object,Object> {
      *         Encoding in Entities</a>
      * @since 10
      */
-    public void storeToXML(OutputStream os, String comment, Charset charset)
+    public void storeToXML(OutputStream os, @Nullable String comment, Charset charset)
         throws IOException {
         Objects.requireNonNull(os, "OutputStream");
         Objects.requireNonNull(charset, "Charset");
@@ -1377,28 +1378,28 @@ public class Properties extends Hashtable<Object,Object> {
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized Object put(@Growable @Replaceable Properties this, Object key, Object value) {
         return map.put(key, value);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized Object remove(@Shrinkable Properties this, @GuardSatisfied @Nullable @UnknownSignedness Object key) {
         return map.remove(key);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized void putAll(@Growable @Replaceable Properties this, Map<?, ?> t) {
         map.putAll(t);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized void clear(@Shrinkable Properties this) {
         map.clear();
@@ -1451,10 +1452,10 @@ public class Properties extends Hashtable<Object,Object> {
         @SideEffectFree
         @Override public Object[] toArray() { return entrySet.toArray(); }
         @Override public <T> @Nullable T[] toArray(@PolyNull T[] a) { return entrySet.toArray(a); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         @Override public void clear() { entrySet.clear(); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         @Override public boolean remove(@UnknownSignedness Object o) { return entrySet.remove(o); }
 
@@ -1476,7 +1477,7 @@ public class Properties extends Hashtable<Object,Object> {
 
         @Override
         @Pure
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return o == this || entrySet.equals(o);
         }
 
@@ -1493,14 +1494,14 @@ public class Properties extends Hashtable<Object,Object> {
         }
 
         @Override
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public boolean removeAll(Collection<? extends @UnknownSignedness Object> c) {
             return entrySet.removeAll(c);
         }
 
         @Override
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public boolean retainAll(Collection<? extends @UnknownSignedness Object> c) {
             return entrySet.retainAll(c);
@@ -1515,7 +1516,7 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Pure
     @Override
-    public synchronized boolean equals(Object o) {
+    public synchronized boolean equals(@Nullable Object o) {
         return map.equals(o);
     }
 
@@ -1527,7 +1528,8 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Override
     @Pure
-    public Object getOrDefault(@GuardSatisfied @Nullable @UnknownSignedness Object key, Object defaultValue) {
+    public @PolyModifiable Object getOrDefault(@GuardSatisfied @Nullable @UnknownSignedness Object key,
+                                               @PolyModifiable Object defaultValue) {
         return map.getOrDefault(key, defaultValue);
     }
 
@@ -1544,30 +1546,30 @@ public class Properties extends Hashtable<Object,Object> {
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized Object putIfAbsent(@Growable Properties this, Object key, Object value) {
         return map.putIfAbsent(key, value);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized boolean remove(@Shrinkable Properties this, @GuardSatisfied @Nullable @UnknownSignedness Object key, @GuardSatisfied @Nullable @UnknownSignedness Object value) {
         return map.remove(key, value);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized boolean replace(@Replaceable Properties this, Object key, Object oldValue, Object newValue) {
         return map.replace(key, oldValue, newValue);
     }
 
     @Override
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized Object replace(@Replaceable Properties this, Object key, Object value) {
+    public synchronized @Nullable Object replace(@Replaceable Properties this, Object key, Object value) {
         return map.replace(key, value);
     }
 
@@ -1580,15 +1582,15 @@ public class Properties extends Hashtable<Object,Object> {
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
-    public synchronized @PolyNull Object computeIfPresent(@Shrinkable @Replaceable Properties this, Object key,
-            BiFunction<? super Object, ? super Object, ? extends @PolyNull Object> remappingFunction) {
+    public synchronized @Nullable Object computeIfPresent(@Shrinkable @Replaceable Properties this, Object key,
+            BiFunction<? super Object, ? super Object, ? extends @Nullable Object> remappingFunction) {
         return map.computeIfPresent(key, remappingFunction);
     }
 
     @Override
     @DoesNotUnrefineReceiver("modifiability")
     public synchronized @PolyNull Object compute(@Modifiable Properties this, Object key,
-            BiFunction<? super Object, ? super Object, ? extends @PolyNull Object> remappingFunction) {
+            BiFunction<? super Object, ? super @Nullable Object, ? extends @PolyNull Object> remappingFunction) {
         return map.compute(key, remappingFunction);
     }
 

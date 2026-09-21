@@ -26,8 +26,10 @@
 package java.util;
 
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
 import java.util.function.Consumer;
@@ -35,7 +37,6 @@ import java.util.function.IntFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import jdk.internal.util.ArraysSupport;
-import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Provides a reverse-ordered view of any Deque. Not serializable.
@@ -76,14 +77,14 @@ class ReverseOrderDequeView<E> implements Deque<E> {
     // ========== Collection ==========
 
     @EnsuresNonEmpty("this")
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public boolean add(E e) {
         base.addFirst(e);
         return true;
     }
 
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public boolean addAll(Collection<? extends E> c) {
         boolean modified = false;
@@ -210,14 +211,17 @@ class ReverseOrderDequeView<E> implements Deque<E> {
 
     // ========== Deque and Queue ==========
 
+    @SideEffectsOnly("this")
     public void addFirst(E e) {
         base.addLast(e);
     }
 
+    @SideEffectsOnly("this")
     public void addLast(E e) {
         base.addFirst(e);
     }
 
+    @SideEffectFree
     public Iterator<E> descendingIterator() {
         return base.iterator();
     }
@@ -252,29 +256,29 @@ class ReverseOrderDequeView<E> implements Deque<E> {
     }
 
     @Pure
-    public E peek() {
+    public @Nullable E peek() {
         return base.peekLast();
     }
 
     @Pure
-    public E peekFirst() {
+    public @Nullable E peekFirst() {
         return base.peekLast();
     }
 
     @Pure
-    public E peekLast() {
+    public @Nullable E peekLast() {
         return base.peekFirst();
     }
 
-    public E poll() {
+    public @Nullable E poll() {
         return base.pollLast();
     }
 
-    public E pollFirst() {
+    public @Nullable E pollFirst() {
         return base.pollLast();
     }
 
-    public E pollLast() {
+    public @Nullable E pollLast() {
         return base.pollFirst();
     }
 

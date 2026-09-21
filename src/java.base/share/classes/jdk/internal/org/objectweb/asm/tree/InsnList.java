@@ -61,6 +61,7 @@ package jdk.internal.org.objectweb.asm.tree;
 
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
+
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
@@ -539,6 +540,7 @@ public class InsnList implements Iterable<AbstractInsnNode> {
         }
 
         @Override
+        @Pure
         public boolean hasNext() {
             return nextInsn != null;
         }

@@ -26,8 +26,10 @@
 package java.util;
 
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmpty;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
 
 import java.util.function.Consumer;
@@ -35,7 +37,6 @@ import java.util.function.IntFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import jdk.internal.util.ArraysSupport;
-import org.checkerframework.dataflow.qual.Pure;
 
 /**
  * Provides a reversed-ordered view of a SortedSet. Not serializable.
@@ -62,7 +63,7 @@ class ReverseOrderSortedSetView<E> implements SortedSet<E> {
 
     // copied from AbstractSet
     @Pure
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this)
             return true;
 
@@ -129,7 +130,7 @@ class ReverseOrderSortedSetView<E> implements SortedSet<E> {
     // ========== Collection ==========
 
     @EnsuresNonEmpty("this")
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public boolean add(E e) {
         base.add(e);
@@ -203,7 +204,7 @@ class ReverseOrderSortedSetView<E> implements SortedSet<E> {
     // ========== SortedSet ==========
 
     @Pure
-    public Comparator<? super E> comparator() {
+    public @Nullable Comparator<? super E> comparator() {
         return comp;
     }
 
@@ -230,6 +231,7 @@ class ReverseOrderSortedSetView<E> implements SortedSet<E> {
 
     // ========== Infrastructure ==========
 
+    @SideEffectFree
     static <T> Iterator<T> descendingIterator(SortedSet<T> set) {
         return new Iterator<>() {
             SortedSet<T> root = set;
@@ -359,7 +361,7 @@ class ReverseOrderSortedSetView<E> implements SortedSet<E> {
         }
 
         @Pure
-        public Comparator<? super E> comparator() {
+        public @Nullable Comparator<? super E> comparator() {
             return ReverseOrderSortedSetView.this.comparator();
         }
 

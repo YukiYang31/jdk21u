@@ -33,21 +33,24 @@ import org.checkerframework.checker.modifiability.qual.Modifiable;
 import org.checkerframework.checker.modifiability.qual.PolyModifiable;
 import org.checkerframework.checker.modifiability.qual.PolyShrinkable;
 import org.checkerframework.checker.modifiability.qual.Replaceable;
+import org.checkerframework.checker.modifiability.qual.SeqGrowable;
+import org.checkerframework.checker.modifiability.qual.SeqUngrowable;
 import org.checkerframework.checker.modifiability.qual.Shrinkable;
 import org.checkerframework.checker.modifiability.qual.Ungrowable;
 import org.checkerframework.checker.nonempty.qual.EnsuresNonEmptyIf;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
 import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
 import org.checkerframework.checker.nullness.qual.KeyFor;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.checkerframework.checker.signedness.qual.UnknownSignedness;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.framework.qual.AnnotatedFor;
 import org.checkerframework.framework.qual.CFComment;
 import org.checkerframework.framework.qual.DoesNotUnrefineReceiver;
-// import org.checkerframework.dataflow.qual.SideEffectsOnly;
 
 import java.util.function.Consumer;
 import java.util.function.BiConsumer;
@@ -414,9 +417,9 @@ public class LinkedHashMap<K,V>
      *
      * @since 21
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public V putFirst(@Growable @Replaceable LinkedHashMap<K,V> this, K k, V v) {
+    public @Nullable V putFirst(@SeqGrowable LinkedHashMap<K,V> this, K k, V v) {
         try {
             putMode = PUT_FIRST;
             return this.put(k, v);
@@ -433,9 +436,9 @@ public class LinkedHashMap<K,V>
      *
      * @since 21
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
-    public V putLast(@Growable @Replaceable LinkedHashMap<K,V> this, K k, V v) {
+    public @Nullable V putLast(@SeqGrowable LinkedHashMap<K,V> this, K k, V v) {
         try {
             putMode = PUT_LAST;
             return this.put(k, v);
@@ -577,7 +580,9 @@ public class LinkedHashMap<K,V>
      */
     @CFComment("`getOrDefault()` is not strictly pure: if `accessOrder==true`, it changes the access order")
     @Pure
-    public V getOrDefault(@Nullable Object key, V defaultValue) {
+    public @PolyModifiable V getOrDefault(LinkedHashMap<K, @PolyModifiable V> this,
+                                          @Nullable Object key,
+                                          @PolyModifiable V defaultValue) {
        Node<K,V> e;
        if ((e = getNode(key)) == null)
            return defaultValue;
@@ -589,7 +594,7 @@ public class LinkedHashMap<K,V>
     /**
      * {@inheritDoc}
      */
-    // @SideEffectsOnly("this")
+    @SideEffectsOnly("this")
     @DoesNotUnrefineReceiver("modifiability")
     public void clear(@Shrinkable @GuardSatisfied LinkedHashMap<K, V> this) {
         super.clear();
@@ -661,7 +666,7 @@ public class LinkedHashMap<K,V>
      * @return a set view of the keys contained in this map
      */
     @SideEffectFree
-    public @IteratorPolyMod @PolyShrinkable @Ungrowable Set<K> keySet(@PolyShrinkable LinkedHashMap<K, V> this) {
+    public @IteratorPolyMod @PolyShrinkable @Ungrowable Set<@KeyFor({"this"}) K> keySet(@PolyShrinkable LinkedHashMap<K, V> this) {
         return sequencedKeySet();
     }
 
@@ -728,12 +733,13 @@ public class LinkedHashMap<K,V>
         return a;
     }
 
+    @SeqUngrowable
     final class LinkedKeySet extends AbstractSet<K> implements SequencedSet<K> {
         final boolean reversed;
         LinkedKeySet(boolean reversed)          { this.reversed = reversed; }
         @Pure
         public final int size()                 { return size; }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final void clear()               { LinkedHashMap.this.clear(); }
         @SideEffectFree
@@ -743,7 +749,7 @@ public class LinkedHashMap<K,V>
         @Pure
         @EnsuresNonEmptyIf(result = true, expression = "this")
         public final boolean contains(@Nullable @UnknownSignedness Object o) { return containsKey(o); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final boolean remove(@Nullable @UnknownSignedness Object key) {
             return removeNode(hash(key), key, null, false, true) != null;
@@ -785,20 +791,21 @@ public class LinkedHashMap<K,V>
         public final K getFirst() { return nsee(reversed ? tail : head).key; }
         @Pure
         public final K getLast() { return nsee(reversed ? head : tail).key; }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final K removeFirst() {
             var node = nsee(reversed ? tail : head);
             removeNode(node.hash, node.key, null, false, false);
             return node.key;
         }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final K removeLast() {
             var node = nsee(reversed ? head : tail);
             removeNode(node.hash, node.key, null, false, false);
             return node.key;
         }
+        @SideEffectFree
         public SequencedSet<K> reversed() {
             if (reversed) {
                 return LinkedHashMap.this.sequencedKeySet();
@@ -854,12 +861,13 @@ public class LinkedHashMap<K,V>
         }
     }
 
+    @SeqUngrowable
     final class LinkedValues extends AbstractCollection<V> implements SequencedCollection<V> {
         final boolean reversed;
         LinkedValues(boolean reversed)          { this.reversed = reversed; }
         @Pure
         public final int size()                 { return size; }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final void clear()               { LinkedHashMap.this.clear(); }
         @SideEffectFree
@@ -905,20 +913,21 @@ public class LinkedHashMap<K,V>
         public final V getFirst() { return nsee(reversed ? tail : head).value; }
         @Pure
         public final V getLast() { return nsee(reversed ? head : tail).value; }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final V removeFirst() {
             var node = nsee(reversed ? tail : head);
             removeNode(node.hash, node.key, null, false, false);
             return node.value;
         }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final V removeLast() {
             var node = nsee(reversed ? head : tail);
             removeNode(node.hash, node.key, null, false, false);
             return node.value;
         }
+        @SideEffectFree
         public SequencedCollection<V> reversed() {
             if (reversed) {
                 return LinkedHashMap.this.sequencedValues();
@@ -975,13 +984,14 @@ public class LinkedHashMap<K,V>
         }
     }
 
+    @SeqUngrowable
     final class LinkedEntrySet extends AbstractSet<Map.Entry<K,V>>
         implements SequencedSet<Map.Entry<K,V>> {
         final boolean reversed;
         LinkedEntrySet(boolean reversed)        { this.reversed = reversed; }
         @Pure
         public final int size()                 { return size; }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final void clear()               { LinkedHashMap.this.clear(); }
         @SideEffectFree
@@ -997,7 +1007,7 @@ public class LinkedHashMap<K,V>
             Node<K,V> candidate = getNode(key);
             return candidate != null && candidate.equals(e);
         }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final boolean remove(@Nullable @UnknownSignedness Object o) {
             if (o instanceof Map.Entry<?, ?> e) {
@@ -1040,20 +1050,21 @@ public class LinkedHashMap<K,V>
         public final Map.Entry<K,V> getFirst() { return nsee(reversed ? tail : head); }
         @Pure
         public final Map.Entry<K,V> getLast() { return nsee(reversed ? head : tail); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final Map.Entry<K,V> removeFirst() {
             var node = nsee(reversed ? tail : head);
             removeNode(node.hash, node.key, null, false, false);
             return node;
         }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final Map.Entry<K,V> removeLast() {
             var node = nsee(reversed ? head : tail);
             removeNode(node.hash, node.key, null, false, false);
             return node;
         }
+        @SideEffectFree
         public SequencedSet<Map.Entry<K,V>> reversed() {
             if (reversed) {
                 return LinkedHashMap.this.sequencedEntrySet();
@@ -1108,7 +1119,7 @@ public class LinkedHashMap<K,V>
             return next != null;
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         final LinkedHashMap.Entry<K,V> nextNode(@NonEmpty LinkedHashIterator this) {
             LinkedHashMap.Entry<K,V> e = next;
             if (modCount != expectedModCount)
@@ -1120,7 +1131,7 @@ public class LinkedHashMap<K,V>
             return e;
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final void remove() {
             Node<K,V> p = current;
@@ -1137,7 +1148,7 @@ public class LinkedHashMap<K,V>
     final @Modifiable class LinkedKeyIterator extends LinkedHashIterator
         implements Iterator<K> {
         LinkedKeyIterator(boolean reversed) { super(reversed); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final K next(@NonEmpty LinkedKeyIterator this) { return nextNode().getKey(); }
     }
@@ -1145,7 +1156,7 @@ public class LinkedHashMap<K,V>
     final @Modifiable class LinkedValueIterator extends LinkedHashIterator
         implements Iterator<V> {
         LinkedValueIterator(boolean reversed) { super(reversed); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final V next(@NonEmpty LinkedValueIterator this) { return nextNode().value; }
     }
@@ -1153,7 +1164,7 @@ public class LinkedHashMap<K,V>
     final @Modifiable class LinkedEntryIterator extends LinkedHashIterator
         implements Iterator<Map.Entry<K,V>> {
         LinkedEntryIterator(boolean reversed) { super(reversed); }
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public final Map.Entry<K,V> next(@NonEmpty LinkedEntryIterator this) { return nextNode(); }
     }
@@ -1171,7 +1182,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if numMappings is negative
      * @since 19
      */
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int numMappings) {
+    public static <K, V> @Modifiable LinkedHashMap<K, V> newLinkedHashMap(int numMappings) {
         if (numMappings < 0) {
             throw new IllegalArgumentException("Negative number of mappings: " + numMappings);
         }
@@ -1190,6 +1201,7 @@ public class LinkedHashMap<K,V>
      * @return {@inheritDoc}
      * @since 21
      */
+    @SideEffectFree
     public SequencedMap<K, V> reversed() {
         return new ReversedLinkedHashMapView<>(this);
     }
@@ -1206,7 +1218,7 @@ public class LinkedHashMap<K,V>
         // inherit toString() from AbstractMap; it depends on entrySet()
 
         @Pure
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return base.equals(o);
         }
 
@@ -1239,29 +1251,29 @@ public class LinkedHashMap<K,V>
 
         @CFComment("`get()` is not strictly pure: if `accessOrder==true`, it changes the access order")
         @Pure
-        public V get(Object key) {
+        public @Nullable V get(@Nullable Object key) {
             return base.get(key);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V put(@Growable @Replaceable ReversedLinkedHashMapView<K,V> this, K key, V value) {
+        public @Nullable V put(@Growable @Replaceable ReversedLinkedHashMapView<K,V> this, K key, V value) {
             return base.put(key, value);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V remove(@Shrinkable ReversedLinkedHashMapView<K,V> this, Object key) {
+        public @Nullable V remove(@Shrinkable ReversedLinkedHashMapView<K,V> this, @Nullable Object key) {
             return base.remove(key);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public void putAll(@Growable @Replaceable ReversedLinkedHashMapView<K,V> this, Map<? extends K, ? extends V> m) {
             base.putAll(m);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public void clear(@Shrinkable ReversedLinkedHashMapView<K,V> this) {
             base.clear();
@@ -1284,7 +1296,9 @@ public class LinkedHashMap<K,V>
 
         @CFComment("`getOrDefault()` is not strictly pure: if `accessOrder==true`, it changes the access order")
         @Pure
-        public V getOrDefault(Object key, V defaultValue) {
+        public @PolyModifiable V getOrDefault(ReversedLinkedHashMapView<K, @PolyModifiable V> this,
+                                              @Nullable Object key,
+                                              @PolyModifiable V defaultValue) {
             return base.getOrDefault(key, defaultValue);
         }
 
@@ -1310,87 +1324,88 @@ public class LinkedHashMap<K,V>
                 throw new ConcurrentModificationException();
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V putIfAbsent(@Growable ReversedLinkedHashMapView<K,V> this, K key, V value) {
+        public @Nullable V putIfAbsent(@Growable ReversedLinkedHashMapView<K,V> this, K key, V value) {
             return base.putIfAbsent(key, value);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public boolean remove(@Shrinkable ReversedLinkedHashMapView<K,V> this, Object key, Object value) {
             return base.remove(key, value);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
         public boolean replace(@Replaceable ReversedLinkedHashMapView<K,V> this, K key, V oldValue, V newValue) {
             return base.replace(key, oldValue, newValue);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V replace(@Replaceable ReversedLinkedHashMapView<K,V> this, K key, V value) {
+        public @Nullable V replace(@Replaceable ReversedLinkedHashMapView<K,V> this, K key, V value) {
             return base.replace(key, value);
         }
 
         @DoesNotUnrefineReceiver("modifiability")
-        public V computeIfAbsent(@Growable ReversedLinkedHashMapView<K,V> this, K key, Function<? super K, ? extends V> mappingFunction) {
+        public @PolyNull V computeIfAbsent(@Growable ReversedLinkedHashMapView<K,V> this, K key, Function<? super K, ? extends @PolyNull V> mappingFunction) {
             return base.computeIfAbsent(key, mappingFunction);
         }
 
         @DoesNotUnrefineReceiver("modifiability")
-        public V computeIfPresent(@Shrinkable @Replaceable ReversedLinkedHashMapView<K,V> this, K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        public @Nullable V computeIfPresent(@Shrinkable @Replaceable ReversedLinkedHashMapView<K,V> this, K key, BiFunction<? super K, ? super V, ? extends @Nullable V> remappingFunction) {
             return base.computeIfPresent(key, remappingFunction);
         }
 
         @DoesNotUnrefineReceiver("modifiability")
-        public V compute(@Modifiable ReversedLinkedHashMapView<K,V> this, K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        public @PolyNull V compute(@Modifiable ReversedLinkedHashMapView<K,V> this, K key, BiFunction<? super K, ? super @Nullable V, ? extends @PolyNull V> remappingFunction) {
             return base.compute(key, remappingFunction);
         }
 
         @DoesNotUnrefineReceiver("modifiability")
-        public V merge(@Modifiable ReversedLinkedHashMapView<K,V> this, K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        public @PolyNull V merge(@Modifiable ReversedLinkedHashMapView<K,V> this, K key, @NonNull V value, BiFunction<? super V, ? super V, ? extends @PolyNull V> remappingFunction) {
             return base.merge(key, value, remappingFunction);
         }
 
         // SequencedMap
 
+        @SideEffectFree
         public SequencedMap<K, V> reversed() {
             return base;
         }
 
         @Pure
-        public Entry<K, V> firstEntry() {
+        public @Nullable Entry<K, V> firstEntry() {
             return base.lastEntry();
         }
 
         @Pure
-        public Entry<K, V> lastEntry() {
+        public @Nullable Entry<K, V> lastEntry() {
             return base.firstEntry();
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public Entry<K, V> pollFirstEntry(@Shrinkable ReversedLinkedHashMapView<K,V> this) {
+        public @Nullable Entry<K, V> pollFirstEntry(@Shrinkable ReversedLinkedHashMapView<K,V> this) {
             return base.pollLastEntry();
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public Entry<K, V> pollLastEntry(@Shrinkable ReversedLinkedHashMapView<K,V> this) {
+        public @Nullable Entry<K, V> pollLastEntry(@Shrinkable ReversedLinkedHashMapView<K,V> this) {
             return base.pollFirstEntry();
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V putFirst(@Growable @Replaceable ReversedLinkedHashMapView<K,V> this, K k, V v) {
+        public @Nullable V putFirst(@SeqGrowable ReversedLinkedHashMapView<K,V> this, K k, V v) {
             return base.putLast(k, v);
         }
 
-        // @SideEffectsOnly("this")
+        @SideEffectsOnly("this")
         @DoesNotUnrefineReceiver("modifiability")
-        public V putLast(@Growable @Replaceable ReversedLinkedHashMapView<K,V> this, K k, V v) {
+        public @Nullable V putLast(@SeqGrowable ReversedLinkedHashMapView<K,V> this, K k, V v) {
             return base.putFirst(k, v);
         }
     }
